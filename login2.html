@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login Form</h2>
+    <form action="login.php" method="post">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+        <input type="submit" value="Login">
+    </form>
+
+    <?php
+    // Database connection parameters
+    $servername = "localhost"; // Or your database host name
+    $username = "root"; // Your database username
+    $password = ""; // Your database password
+    $dbname = "usersdb"; // Your database name
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Check if the form is submitted
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Get username and password from the form
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        // Hash the password (you may want to use a stronger hashing algorithm)
+        $hashed_password = md5($password); // Not secure, use bcrypt or similar in production
+
+        // Prepare SQL statement to prevent SQL injection
+        $stmt = $conn->prepare("SELECT id, username FROM users WHERE username=? AND password=?");
+        $stmt->bind_param("ss", $username, $hashed_password);
+        $stmt->execute();
+        $stmt->store_result();
+
+        // Check if user exists
+        if ($stmt->num_rows == 1) {
+            // User found, redirect to a welcome page or set session variables
+            echo "Login successful!";
+            // You can redirect the user to a welcome page or set session variables here
+        } else {
+            // Invalid username or password
+            echo "Invalid username or password";
+        }
+
+        // Close statement
+        $stmt->close();
+    }
+
+    // Close connection
+    $conn->close();
+    ?>
+</body>
+</html>

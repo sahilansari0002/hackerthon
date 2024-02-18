@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Notebook Project</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      perspective: 1000px;
+      background-color: #f0f0f0;
+    }
+
+    .notebook-container {
+      width: 300px;
+      height: 400px;
+      position: relative;
+      margin: 100px auto;
+      transform-style: preserve-3d;
+    }
+
+    .notebook {
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      border: 5px solid #333;
+      border-radius: 10px;
+      position: absolute;
+      transform-origin: 0% 50%;
+      transition: transform 0.5s;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .cover {
+      width: 50%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      background-color: #3498db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px 0 0 8px;
+      box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .cover h1 {
+      color: #fff;
+    }
+
+    .content {
+      width: 50%;
+      height: 100%;
+      position: absolute;
+      right: 0;
+      overflow: hidden;
+      border-radius: 0 8px 8px 0;
+      box-shadow: -5px 0 5px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .inner-content {
+      padding: 20px;
+      color: #333;
+    }
+
+    .login-form,
+    .assignment-form {
+      display: none;
+    }
+
+    .page-buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .page-buttons button {
+      padding: 10px;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+
+    .assignment-page {
+      display: none;
+    }
+
+    .assignment-page.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="notebook-container">
+  <div class="notebook">
+    <div class="cover">
+      <h1>My Notebook</h1>
+    </div>
+    <div class="content">
+      <div class="inner-content login-form">
+        <h2>Login Form</h2>
+        <form id="loginForm">
+          Username: <input type="text" name="username"><br>
+          Password: <input type="password" name="password"><br>
+          <input type="submit" value="Login">
+        </form>
+      </div>
+      <div class="inner-content assignment-form">
+        <h2>Write Your Assignment</h2>
+        <div id="pages">
+          <div class="assignment-page active">
+            <textarea rows="10" cols="30" class="assignment-textarea"></textarea><br>
+          </div>
+        </div>
+      </div>
+      <div class="page-buttons">
+        <button onclick="addPage()">Next Page</button>
+        <button onclick="prevPage()">Previous Page</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var currentPage = 1;
+
+  function nextPage() {
+    currentPage++;
+    updatePage();
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      updatePage();
+    }
+  }
+
+  function addPage() {
+    var pagesContainer = document.getElementById('pages');
+    var newPage = document.createElement('div');
+    newPage.className = 'assignment-page';
+    newPage.innerHTML = '<textarea rows="10" cols="30" class="assignment-textarea"></textarea><br>';
+    pagesContainer.appendChild(newPage);
+    currentPage = pagesContainer.childElementCount; // Set current page to the newly added page
+    updatePage();
+  }
+
+  function updatePage() {
+    var notebook = document.querySelector('.notebook');
+    notebook.style.transform = 'rotateY(' + (180 * (currentPage - 1)) + 'deg)';
+
+    var assignmentPages = document.querySelectorAll('.assignment-page');
+    assignmentPages.forEach(function (page, index) {
+      page.classList.toggle('active', index + 1 === currentPage);
+    });
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    nextPage();
+  });
+
+  updatePage(); // Initial page setup
+</script>
+
+</body>
+</html>
